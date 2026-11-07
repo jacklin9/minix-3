@@ -43,13 +43,13 @@
 
 struct boot_image image[NR_BOOT_PROCS] = {
 /* process nr, name */
-{ASYNCM,        "asyncm"},
+{ASYNCM,        "asyncm"},  // 5 tasks
 {IDLE,          "idle"  },
 {CLOCK,         "clock" },
 {SYSTEM,        "system"},
 {HARDWARE,      "kernel"},
                       
-{DS_PROC_NR,    "ds"    },
+{DS_PROC_NR,    "ds"    },  // 11 user procs
 {RS_PROC_NR,    "rs"    },
                       
 {PM_PROC_NR,    "pm"    },

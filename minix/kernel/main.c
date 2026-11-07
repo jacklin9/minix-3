@@ -162,7 +162,7 @@ void kmain(kinfo_t *local_cbi)
 		NR_BOOT_MODULES, kinfo.mbi.mi_mods_count);
 
   /* Set up proc table entries for processes in boot image. */
-  for (i=0; i < NR_BOOT_PROCS; ++i) {
+  for (i=0; i < NR_BOOT_PROCS; ++i) {   // Init tasks and servers
 	int schedulable_proc;
 	proc_nr_t proc_nr;
 	int ipc_to_m, kcalls;
@@ -197,14 +197,14 @@ void kmain(kinfo_t *local_cbi)
 		proc_nr == VM_PROC_NR);
 	if(schedulable_proc) {
 	    /* Assign privilege structure. Force a static privilege id. */
-            (void) get_priv(rp, static_priv_id(proc_nr));
+        (void) get_priv(rp, static_priv_id(proc_nr));
 
-            /* Privileges for kernel tasks. */
+        /* Privileges for kernel tasks. */
 	    if(proc_nr == VM_PROC_NR) {
                 priv(rp)->s_flags = VM_F;
                 priv(rp)->s_trap_mask = SRV_T;
-		ipc_to_m = SRV_M;
-		kcalls = SRV_KC;
+		        ipc_to_m = SRV_M;
+		        kcalls = SRV_KC;
                 priv(rp)->s_sig_mgr = SELF;
                 rp->p_priority = SRV_Q;
                 rp->p_quantum_size_ms = SRV_QT;
@@ -219,34 +219,34 @@ void kmain(kinfo_t *local_cbi)
                     || proc_nr == SYSTEM  ? CSK_T : TSK_T);
                 ipc_to_m = TSK_M;                  /* allowed targets */
                 kcalls = TSK_KC;                   /* allowed kernel calls */
-            }
-            /* Privileges for the root system process. */
-            else {
+       }
+       /* Privileges for the root system process. */
+       else {
 	    	assert(isrootsysn(proc_nr));
-                priv(rp)->s_flags= RSYS_F;        /* privilege flags */
-                priv(rp)->s_init_flags = SRV_I;   /* init flags */
-                priv(rp)->s_trap_mask= SRV_T;     /* allowed traps */
-                ipc_to_m = SRV_M;                 /* allowed targets */
-                kcalls = SRV_KC;                  /* allowed kernel calls */
-                priv(rp)->s_sig_mgr = SRV_SM;     /* signal manager */
-                rp->p_priority = SRV_Q;	          /* priority queue */
-                rp->p_quantum_size_ms = SRV_QT;   /* quantum size */
-            }
+            priv(rp)->s_flags= RSYS_F;        /* privilege flags */
+            priv(rp)->s_init_flags = SRV_I;   /* init flags */
+            priv(rp)->s_trap_mask= SRV_T;     /* allowed traps */
+            ipc_to_m = SRV_M;                 /* allowed targets */
+            kcalls = SRV_KC;                  /* allowed kernel calls */
+            priv(rp)->s_sig_mgr = SRV_SM;     /* signal manager */
+            rp->p_priority = SRV_Q;	          /* priority queue */
+            rp->p_quantum_size_ms = SRV_QT;   /* quantum size */
+       }
 
-            /* Fill in target mask. */
-            memset(&map, 0, sizeof(map));
+       /* Fill in target mask. */
+       memset(&map, 0, sizeof(map));
 
-            if (ipc_to_m == ALL_M) {
-                for(j = 0; j < NR_SYS_PROCS; j++)
-                    set_sys_bit(map, j);
-            }
+       if (ipc_to_m == ALL_M) {
+           for(j = 0; j < NR_SYS_PROCS; j++)
+               set_sys_bit(map, j);
+       }
 
-            fill_sendto_mask(rp, &map);
+       fill_sendto_mask(rp, &map);
 
-            /* Fill in kernel call mask. */
-            for(j = 0; j < SYS_CALL_MASK_SIZE; j++) {
-                priv(rp)->s_k_call_mask[j] = (kcalls == NO_C ? 0 : (~0));
-            }
+       /* Fill in kernel call mask. */
+       for(j = 0; j < SYS_CALL_MASK_SIZE; j++) {
+           priv(rp)->s_k_call_mask[j] = (kcalls == NO_C ? 0 : (~0));
+       }
 	}
 	else {
 	    /* Don't let the process run for now. */
