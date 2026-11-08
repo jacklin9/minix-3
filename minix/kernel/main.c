@@ -146,7 +146,7 @@ void kmain(kinfo_t *local_cbi)
 
   cstart();
 
-  BKL_LOCK();
+  BKL_LOCK();   // Big kernel lock
  
    DEBUGEXTRA(("main()\n"));
 
@@ -155,7 +155,7 @@ void kmain(kinfo_t *local_cbi)
    * privilege structures for the system processes and the ipc filter pool.
    */
   proc_init();
-  IPCF_POOL_INIT();
+  IPCF_POOL_INIT(); // Init IPC filter pool
 
    if(NR_BOOT_MODULES != kinfo.mbi.mi_mods_count)
    	panic("expecting %d boot processes/modules, found %d",
@@ -173,10 +173,10 @@ void kmain(kinfo_t *local_cbi)
 	rp = proc_addr(ip->proc_nr);		/* get process pointer */
 	ip->endpoint = rp->p_endpoint;		/* ipc endpoint */
 	rp->p_cpu_time_left = 0;
-	if(i < NR_TASKS)			/* name (tasks only) */
+	if(i < NR_TASKS)			/* name (tasks only) */         // It is a task
 		strlcpy(rp->p_name, ip->proc_name, sizeof(rp->p_name));
 
-	if(i >= NR_TASKS) {
+	if(i >= NR_TASKS) {                                         // It is a user space server
 		/* Remember this so it can be passed to VM */
 		multiboot_module_t *mb_mod = &kinfo.module_list[i - NR_TASKS];
 		ip->start_addr = mb_mod->mod_start;
@@ -200,7 +200,7 @@ void kmain(kinfo_t *local_cbi)
         (void) get_priv(rp, static_priv_id(proc_nr));
 
         /* Privileges for kernel tasks. */
-	    if(proc_nr == VM_PROC_NR) {
+	    if(proc_nr == VM_PROC_NR) { // It is VM
                 priv(rp)->s_flags = VM_F;
                 priv(rp)->s_trap_mask = SRV_T;
 		        ipc_to_m = SRV_M;
@@ -209,7 +209,7 @@ void kmain(kinfo_t *local_cbi)
                 rp->p_priority = SRV_Q;
                 rp->p_quantum_size_ms = SRV_QT;
 	    }
-	    else if(iskerneln(proc_nr)) {
+	    else if(iskerneln(proc_nr)) {   // It is task
                 /* Privilege flags. */
                 priv(rp)->s_flags = (proc_nr == IDLE ? IDL_F : TSK_F);
                 /* Init flags. */
