@@ -228,8 +228,8 @@ kinfo_t *pre_init(u32_t magic, u32_t ebx)
 	 * this code stays where it should be.
 	 */
 	pg_clear();
-	pg_identity(&kinfo);
-	kinfo.freepde_start = pg_mapkernel();
+	pg_identity(&kinfo);    // Set identity mapping
+	kinfo.freepde_start = pg_mapkernel();   // Do regular kernel virtual address mapping
 	pg_load();
 	vm_enable_paging();
 

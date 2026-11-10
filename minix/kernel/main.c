@@ -144,7 +144,7 @@ void kmain(kinfo_t *local_cbi)
   assert(sizeof(kinfo.boot_procs) == sizeof(image));
   memcpy(kinfo.boot_procs, image, sizeof(kinfo.boot_procs));
 
-  cstart();
+  cstart();     // Do low level hardware init
 
   BKL_LOCK();   // Big kernel lock
  
@@ -154,7 +154,7 @@ void kmain(kinfo_t *local_cbi)
    * for proc_addr() and proc_nr() macros. Do the same for the table with
    * privilege structures for the system processes and the ipc filter pool.
    */
-  proc_init();
+  proc_init();  // Mark entries in proc table as free
   IPCF_POOL_INIT(); // Init IPC filter pool
 
    if(NR_BOOT_MODULES != kinfo.mbi.mi_mods_count)
@@ -162,7 +162,7 @@ void kmain(kinfo_t *local_cbi)
 		NR_BOOT_MODULES, kinfo.mbi.mi_mods_count);
 
   /* Set up proc table entries for processes in boot image. */
-  for (i=0; i < NR_BOOT_PROCS; ++i) {   // Init tasks and servers
+  for (i=0; i < NR_BOOT_PROCS; ++i) {   // Init tasks and servers. Mark proc as stop and not free
 	int schedulable_proc;
 	proc_nr_t proc_nr;
 	int ipc_to_m, kcalls;
@@ -179,7 +179,7 @@ void kmain(kinfo_t *local_cbi)
 	if(i >= NR_TASKS) {                                         // It is a user space server
 		/* Remember this so it can be passed to VM */
 		multiboot_module_t *mb_mod = &kinfo.module_list[i - NR_TASKS];
-		ip->start_addr = mb_mod->mod_start;
+		ip->start_addr = mb_mod->mod_start;                 // Set user servers' entry address
 		ip->len = mb_mod->mod_end - mb_mod->mod_start;
 	}
 	
@@ -194,7 +194,7 @@ void kmain(kinfo_t *local_cbi)
 	 */
 	proc_nr = proc_nr(rp);
 	schedulable_proc = (iskerneln(proc_nr) || isrootsysn(proc_nr) ||
-		proc_nr == VM_PROC_NR);
+		proc_nr == VM_PROC_NR); // If the proc is task or rs server or vm server, it is schedulable
 	if(schedulable_proc) {
 	    /* Assign privilege structure. Force a static privilege id. */
         (void) get_priv(rp, static_priv_id(proc_nr));
@@ -408,14 +408,14 @@ void cstart(void)
   register char *value;				/* value in key=value pair */
 
   /* low-level initialization */
-  prot_init();
+  prot_init();  // Redo prot init, including gdt, idt, tss, and paging
 
   /* determine verbosity */
   if ((value = env_get(VERBOSEBOOTVARNAME)))
 	  verboseboot = atoi(value);
 
   /* Initialize clock variables. */
-  init_clock();
+  init_clock();         // Only init variables
 
   /* Get memory parameters. */
   value = env_get("ac_layout");
@@ -469,7 +469,7 @@ void cstart(void)
 #endif
   DEBUGEXTRA(("intr_init(0)\n"));
 
-  intr_init(0);
+  intr_init(0); // Init interrupt controller
 
   arch_init();
 }

@@ -306,7 +306,7 @@ void switch_to_user(void)
 	int tlb_must_refresh = 0;
 #endif
 
-	p = get_cpulocal_var(proc_ptr);
+	p = get_cpulocal_var(proc_ptr); // Now proc_ptr should point to local cpu's idle proc
 	/*
 	 * if the current process is still runnable check the misc flags and let
 	 * it run unless it becomes not runnable in the meantime

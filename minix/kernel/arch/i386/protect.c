@@ -422,7 +422,7 @@ void arch_boot_proc(struct boot_image *ip, struct proc *rp)
 		execi.clearproc = NULL;
 
 		/* parse VM ELF binary and alloc/map it into bootstrap pagetable */
-		if(libexec_load_elf(&execi) != OK)
+		if(libexec_load_elf(&execi) != OK)      // Init VM server
 			panic("VM loading failed");
 
 		/* Setup a ps_strings struct on the stack, pointing to the
