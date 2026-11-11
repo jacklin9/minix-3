@@ -61,7 +61,7 @@ void bsp_finish_booting(void)
    * we have access to the cpu local run queue, only now schedule the processes.
    * We ignore the slots for the former kernel tasks
    */
-  for (i=0; i < NR_BOOT_PROCS - NR_TASKS; i++) {
+  for (i=0; i < NR_BOOT_PROCS - NR_TASKS; i++) {    // Set user server proc as runnable and enqueue the proc
 	RTS_UNSET(proc_addr(i), RTS_PROC_STOP);
   }
   /*
@@ -70,7 +70,7 @@ void bsp_finish_booting(void)
    */
   cycles_accounting_init();
 
-  if (boot_cpu_init_timer(system_hz)) {
+  if (boot_cpu_init_timer(system_hz)) { // Set timer IRQ handler
 	  panic("FATAL : failed to initialize timer interrupts, "
 			  "cannot continue without any clock source!");
   }
