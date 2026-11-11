@@ -1143,3 +1143,6 @@ minix/kernel/arch/i386/io_inb.S
 minix/kernel/arch/i386/trampoline.S
 minix/kernel/arch/i386/io_intr.S
 minix/kernel/arch/i386/kernel.lds
+minix/lib/libexec/exec_general.c
+minix/lib/libexec/exec_elf.c
+minix/lib/libexec/libexec.h

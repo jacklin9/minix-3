@@ -156,7 +156,7 @@ void switch_k_stack(void * esp, void (* continuation)(void));
 
 void __switch_address_space(struct proc * p, struct proc ** __ptproc);
 #define switch_address_space(proc)	\
-	__switch_address_space(proc, get_cpulocal_var_ptr(ptproc))
+	__switch_address_space(proc, get_cpulocal_var_ptr(ptproc))  // ptproc is initially VM server
 
 void refresh_tlb(void);
 

@@ -306,12 +306,12 @@ void switch_to_user(void)
 	int tlb_must_refresh = 0;
 #endif
 
-	p = get_cpulocal_var(proc_ptr); // Now proc_ptr should point to local cpu's idle proc
+	p = get_cpulocal_var(proc_ptr); // Now proc_ptr should point to local cpu's idle_proc
 	/*
 	 * if the current process is still runnable check the misc flags and let
 	 * it run unless it becomes not runnable in the meantime
 	 */
-	if (proc_is_runnable(p))
+	if (proc_is_runnable(p))        // Initially not runnable
 		goto check_misc_flags;
 	/*
 	 * if a process becomes not runnable while handling the misc flags, we
@@ -319,9 +319,9 @@ void switch_to_user(void)
 	 * current process wasn't runnable, we pick a new one here
 	 */
 not_runnable_pick_new:
-	if (proc_is_preempted(p)) {
+	if (proc_is_preempted(p)) {     // Initially yes
 		p->p_rts_flags &= ~RTS_PREEMPTED;
-		if (proc_is_runnable(p)) {
+		if (proc_is_runnable(p)) {      // Initially not runnable
 			if (p->p_cpu_time_left)
 				enqueue_head(p);
 			else
@@ -335,7 +335,7 @@ not_runnable_pick_new:
 	 * timer interrupt the execution resumes here and we can pick another
 	 * process. If there is still nothing runnable we "schedule" IDLE again
 	 */
-	while (!(p = pick_proc())) {
+	while (!(p = pick_proc())) {    // Initially pick up VM server
 		idle();
 	}
 

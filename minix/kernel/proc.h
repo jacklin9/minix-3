@@ -21,7 +21,7 @@
 
 struct proc {
   struct stackframe_s p_reg;	/* process' registers saved in stack frame */
-  struct segframe p_seg;	/* segment descriptors */
+  struct segframe p_seg;	/* segment descriptors */                               // It contains CR3 register
   proc_nr_t p_nr;		/* number of this process (for fast access) */
   struct priv *p_priv;		/* system privileges structure */
   volatile u32_t p_rts_flags;	/* process is runnable only if zero */
