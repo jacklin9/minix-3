@@ -76,12 +76,12 @@ int do_sef_init_request(message *);
 /*===========================================================================*
  *				is_first_time				     *
  *===========================================================================*/
-static int is_first_time(void)
+static int is_first_time(void)  // Check if VM is first run by checking if the flag of RS proc contains RTS_BOOTINHIBIT
 {
 	struct proc rs_proc;
 	int r;
 
-	if ((r = sys_getproc(&rs_proc, RS_PROC_NR)) != OK)
+	if ((r = sys_getproc(&rs_proc, RS_PROC_NR)) != OK)  // Get RS proc
 		panic("VM: couldn't get RS process data: %d", r);
 
 	return RTS_ISSET(&rs_proc, RTS_BOOTINHIBIT);

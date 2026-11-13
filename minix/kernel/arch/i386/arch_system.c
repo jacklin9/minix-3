@@ -503,7 +503,7 @@ struct proc * arch_finish_switch_to_user(void)
 	stk = (char *)tss[0].sp0;
 #endif
 	/* set pointer to the process to run on the stack */
-	p = get_cpulocal_var(proc_ptr);
+	p = get_cpulocal_var(proc_ptr); // p point to new proc
 	*((reg_t *)stk) = (reg_t) p;
 
 	/* make sure IF is on in FLAGS so that interrupts won't be disabled

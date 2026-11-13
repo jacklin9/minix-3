@@ -306,7 +306,7 @@ void switch_to_user(void)
 	int tlb_must_refresh = 0;
 #endif
 
-	p = get_cpulocal_var(proc_ptr); // Now proc_ptr should point to local cpu's idle_proc
+	p = get_cpulocal_var(proc_ptr); // At first call, proc_ptr should point to local cpu's idle_proc
 	/*
 	 * if the current process is still runnable check the misc flags and let
 	 * it run unless it becomes not runnable in the meantime
@@ -346,7 +346,7 @@ not_runnable_pick_new:
 	if (p->p_misc_flags & MF_FLUSH_TLB && get_cpulocal_var(ptproc) == p)
 		tlb_must_refresh = 1;
 #endif
-	switch_address_space(p);
+	switch_address_space(p);        // Switch to new proc's address space
 
 check_misc_flags:
 
@@ -357,15 +357,15 @@ check_misc_flags:
 		 MF_SC_DEFER | MF_SC_TRACE | MF_SC_ACTIVE)) {
 
 		assert(proc_is_runnable(p));
-		if (p->p_misc_flags & MF_KCALL_RESUME) {
+		if (p->p_misc_flags & MF_KCALL_RESUME) {        // Need to kernel call
 			kernel_call_resume(p);
 		}
-		else if (p->p_misc_flags & MF_DELIVERMSG) {
+		else if (p->p_misc_flags & MF_DELIVERMSG) {     // Need to deliver signal
 			TRACE(VF_SCHEDULING, printf("delivering to %s / %d\n",
 				p->p_name, p->p_endpoint););
 			delivermsg(p);
 		}
-		else if (p->p_misc_flags & MF_SC_DEFER) {
+		else if (p->p_misc_flags & MF_SC_DEFER) {       // Need to do deferred system call
 			/* Perform the system call that we deferred earlier. */
 
 			assert (!(p->p_misc_flags & MF_SC_ACTIVE));

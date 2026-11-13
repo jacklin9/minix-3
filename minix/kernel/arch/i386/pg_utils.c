@@ -124,7 +124,7 @@ u32_t *alloc_pagetable(phys_bytes *ph)
 {
 	u32_t *ret;
 #define PG_PAGETABLES 6
-	static u32_t pagetables[PG_PAGETABLES][1024]  __aligned(4096);
+	static u32_t pagetables[PG_PAGETABLES][1024]  __aligned(4096);  // Pages used as page tables
 	static int pt_inuse = 0;
 	if(pt_inuse >= PG_PAGETABLES) panic("no more pagetables");
 	assert(sizeof(pagetables[pt_inuse]) == I386_PAGE_SIZE);
@@ -295,7 +295,7 @@ void pg_map(phys_bytes phys, vir_bytes vaddr, vir_bytes vaddr_end,
 		pte = I386_VM_PTE(vaddr);
 		if(mapped_pde < pde) {
 			phys_bytes ph;
-			pt = alloc_pagetable(&ph);
+			pt = alloc_pagetable(&ph);      // pt is the vaddr of page table, ph is the paddr of page table
 			pagedir[pde] = (ph & I386_VM_ADDR_MASK)
 		                | I386_VM_PRESENT | I386_VM_USER | I386_VM_WRITE;
 			mapped_pde = pde;

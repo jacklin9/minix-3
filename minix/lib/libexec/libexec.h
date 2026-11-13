@@ -42,7 +42,7 @@ struct exec_info {
     libexec_allocfunc_t allocmem_prealloc_cleared; /* Alloc callback */
     libexec_allocfunc_t allocmem_prealloc_junk; /* Alloc callback */
     libexec_allocfunc_t allocmem_ondemand; /* Alloc callback */
-    libexec_procclearfunc_t clearproc;	/* Clear process callback */
+    libexec_procclearfunc_t clearproc;	/* Clear process callback */    // Callback to clear proc address space
     libexec_mmap_t memmap;		/* mmap callback */
     void *opaque;			/* Callback data */
 

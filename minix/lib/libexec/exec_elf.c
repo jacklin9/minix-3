@@ -166,7 +166,7 @@ int libexec_load_elf(struct exec_info *execi)
 		}
 	}
 
-	if(execi->clearproc) execi->clearproc(execi);
+	if(execi->clearproc) execi->clearproc(execi);   // For VM server, clearproc is NULL
 
 	for (i = 0; i < hdr->e_phnum; i++) {
 		vir_bytes seg_membytes, page_offset, p_vaddr, vaddr;
@@ -204,13 +204,13 @@ int libexec_load_elf(struct exec_info *execi)
 			try_mmap = 0;
 		}
 
-		if(!execi->memmap) {
+		if(!execi->memmap) {    // For VM server, memmap = NULL
 			try_mmap = 0;
 		}
 
 		foffset = ph->p_offset;
 		fbytes = ph->p_filesz;
-		vaddr = p_vaddr = ph->p_vaddr + execi->load_offset;
+		vaddr = p_vaddr = ph->p_vaddr + execi->load_offset;     // For VM server load_offset = 0
 		seg_membytes = ph->p_memsz;
 
 		page_offset = vaddr % PAGE_SIZE;
@@ -240,7 +240,7 @@ int libexec_load_elf(struct exec_info *execi)
 		else
 			execi->data_size = seg_membytes;
 
-		if(try_mmap && execi->memmap(execi, vaddr, fbytes, foffset, clearend, mmap_prot) == OK) {
+		if(try_mmap && execi->memmap(execi, vaddr, fbytes, foffset, clearend, mmap_prot) == OK) {   // Use memmap to load
 #if ELF_DEBUG
 			printf("libexec: mmap 0x%lx-0x%llx done, clearend 0x%x\n",
 				vaddr, vaddr+fbytes, clearend);
@@ -260,9 +260,9 @@ int libexec_load_elf(struct exec_info *execi)
 					remstart, remstart+rem_mem);
 #endif
 			}
-		} else {
+		} else {        // Do not use memmap
 			/* make us some memory */
-			if(execi->allocmem_prealloc_junk(execi, vaddr, seg_membytes) != OK) {
+			if(execi->allocmem_prealloc_junk(execi, vaddr, seg_membytes) != OK) {   // Allocate memory. For VM server, the callback is libexec_pg_alloc
 				if(execi->clearproc) execi->clearproc(execi);
 				return ENOMEM;
 			}
@@ -300,7 +300,7 @@ int libexec_load_elf(struct exec_info *execi)
 	}
 
 	/* Make it a stack */
-	if(execi->allocmem_ondemand(execi, stacklow, execi->stack_size) != OK) {
+	if(execi->allocmem_ondemand(execi, stacklow, execi->stack_size) != OK) {        // For VM server, the callback is libexec_pg_alloc
 		if(execi->clearproc) execi->clearproc(execi);
 		return ENOMEM;
 	}
