@@ -2824,7 +2824,7 @@ static inline int _ipc_notify(endpoint_t dest)
 
 static inline int _do_kernel_call(message *m_ptr)
 {
-	return _minix_ipcvecs.do_kernel_call(m_ptr);    // It is actually _do_kernel_call_intr
+	return _minix_ipcvecs.do_kernel_call(m_ptr);    // It is actually _do_kernel_call_intr, which is int instructiion with vector 32
 }
 
 static inline int _ipc_senda(asynmsg_t *table, size_t count)
