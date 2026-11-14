@@ -264,7 +264,7 @@ static struct vmproc *init_proc(endpoint_t ep_nr)
 	struct boot_image *ip;
 
 	for (ip = &kernel_boot_info.boot_procs[0];  // Find proc ep_nr
-		ip < &kernel_boot_info.boot_procs[NR_BOOT_PROCS]; ip++) {   // For tasks and servers
+		ip < &kernel_boot_info.boot_procs[NR_BOOT_PROCS]; ip++) {   // Scan task and server procs
 		struct vmproc *vmp;
 
 		if(ip->proc_nr != ep_nr) continue;

@@ -1107,7 +1107,7 @@ void pt_init(void)
 	assert(m >= 0);
 	assert(m < kernel_boot_info.mods_with_kernel);
 	assert(kernel_boot_info.mods_with_kernel < MULTIBOOT_MAX_MODS);
-	kern_mb_mod = &kernel_boot_info.module_list[m];
+	kern_mb_mod = &kernel_boot_info.module_list[m]; // The loaded module which is kernel
 	kern_size = kern_mb_mod->mod_end - kern_mb_mod->mod_start;
 	assert(!(kern_mb_mod->mod_start % ARCH_BIG_PAGE_SIZE));
 	assert(!(kernel_boot_info.vir_kern_start % ARCH_BIG_PAGE_SIZE));
