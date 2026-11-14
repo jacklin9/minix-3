@@ -108,7 +108,7 @@ void *reservedqueue_new(int max_available, int npages, int mapped, int allocflag
 	assert(npages < 10);
 
 	for(r = 0; r < MAXRESERVEDQUEUES; r++)
-		if(!reservedqueues[r].max_available)
+		if(!reservedqueues[r].max_available)    // Found a free slot
 			break;
 
 	if(r >= MAXRESERVEDQUEUES) {

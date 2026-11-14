@@ -1148,11 +1148,11 @@ void pt_init(void)
         }
 #endif
 
-	if(!(spare_pagequeue = reservedqueue_new(SPAREPAGES, 1, 1, 0)))
+	if(!(spare_pagequeue = reservedqueue_new(SPAREPAGES, 1, 1, 0))) // Get a page queue element from reservedqueues
 		panic("reservedqueue_new for single pages failed");
 
         assert(STATIC_SPAREPAGES < SPAREPAGES);
-        for(s = 0; s < STATIC_SPAREPAGES; s++) {
+        for(s = 0; s < STATIC_SPAREPAGES; s++) {        // Put pages statically allocated from static_sparepages to spare_pagequeue
 		void *v = (void *) (sparepages_mem + s*VM_PAGE_SIZE);
 		phys_bytes ph;
 		if((r=sys_umap(SELF, VM_D, (vir_bytes) v,
