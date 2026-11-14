@@ -108,7 +108,7 @@ void *reservedqueue_new(int max_available, int npages, int mapped, int allocflag
 	assert(npages < 10);
 
 	for(r = 0; r < MAXRESERVEDQUEUES; r++)
-		if(!reservedqueues[r].max_available)    // Found a free slot
+		if(!reservedqueues[r].max_available)    // Found a free slot. reservedqueues is used to store reserved memory
 			break;
 
 	if(r >= MAXRESERVEDQUEUES) {
@@ -120,7 +120,7 @@ void *reservedqueue_new(int max_available, int npages, int mapped, int allocflag
 
 	memset(rq, 0, sizeof(*rq));
 	rq->next = first_reserved_inuse;
-	first_reserved_inuse = rq;
+	first_reserved_inuse = rq;      // Insert into list of memory queue headed by first_reserved_inuse
 
 	rq->max_available = max_available;
 	rq->npages = npages;
@@ -258,7 +258,7 @@ phys_clicks alloc_mem(phys_clicks clicks, u32_t memflags)
   }
 
   do {
-	mem = alloc_pages(clicks, memflags);
+	mem = alloc_pages(clicks, memflags);    // Allocate page from single page fram cache or free page bitmap
   } while(mem == NO_MEM && cache_freepages(clicks) > 0);
 
   if(mem == NO_MEM)

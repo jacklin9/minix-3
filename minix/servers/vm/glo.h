@@ -22,7 +22,7 @@ EXTERN struct vmproc vmproc[VMP_NR];
 long enable_filemap;
 
 typedef kinfo_t ixfer_kinfo_t;
-EXTERN ixfer_kinfo_t kernel_boot_info;
+EXTERN ixfer_kinfo_t kernel_boot_info;  // Init in init_vm
 
 #if SANITYCHECKS
 EXTERN int nocheck;

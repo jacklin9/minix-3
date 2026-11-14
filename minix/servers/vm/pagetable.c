@@ -1004,7 +1004,7 @@ int pt_new(pt_t *pt)
 	 */
         if(!pt->pt_dir &&
           !(pt->pt_dir = vm_allocpages((phys_bytes *)&pt->pt_dir_phys,
-	  	VMP_PAGEDIR, ARCH_PAGEDIR_SIZE/VM_PAGE_SIZE))) {
+	  	VMP_PAGEDIR, ARCH_PAGEDIR_SIZE/VM_PAGE_SIZE))) {        // Allocate a page dir and map the page dir to VM server namespace
 		return ENOMEM;
 	}
 
@@ -1019,7 +1019,7 @@ int pt_new(pt_t *pt)
 	pt->pt_virtop = 0;
 
         /* Map in kernel. */
-        if((r=pt_mapkernel(pt)) != OK)
+        if((r=pt_mapkernel(pt)) != OK)  // Map the kernel and related information to the kernel space in the page mapping
 		return r;
 
 	return OK;
@@ -1114,7 +1114,7 @@ void pt_init(void)
 	kern_start_pde = kernel_boot_info.vir_kern_start / ARCH_BIG_PAGE_SIZE;
 
         /* Get ourselves spare pages. */
-        sparepages_mem = (vir_bytes) static_sparepages;
+        sparepages_mem = (vir_bytes) static_sparepages; // static_sparepages is statically defined pages. sparsepages are used to allocate memory before VM server has its own page tables
 	assert(!(sparepages_mem % VM_PAGE_SIZE));
 
 #if defined(__arm__)
@@ -1453,7 +1453,7 @@ int pt_mapkernel(pt_t *pt)
 	addr = kern_mb_mod->mod_start;
 
 	/* Actually mapping in kernel */
-	while(mapped < kern_size) {
+	while(mapped < kern_size) {     // Map kernel address space
 #if defined(__i386__)
 		pt->pt_dir[kern_pde] = addr | ARCH_VM_PDE_PRESENT |
 			ARCH_VM_BIGPAGE | ARCH_VM_PTE_RW | global_bit;
@@ -1469,7 +1469,7 @@ int pt_mapkernel(pt_t *pt)
 		addr += ARCH_BIG_PAGE_SIZE;
 	}
 
-	/* Kernel also wants to know about all page directories. */
+	/* Kernel also wants to know about all page directories. */     // Kernel address space of the proc also needs to access the page tables
 	{
 		int pd;
 		for(pd = 0; pd < MAX_PAGEDIR_PDES; pd++) {

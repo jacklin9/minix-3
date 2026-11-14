@@ -349,7 +349,7 @@ static void exec_bootproc(struct vmproc *vmp, struct boot_image *ip)
 
 	memset(&vmexeci, 0, sizeof(vmexeci));
 
-	if(pt_new(&vmp->vm_pt) != OK)
+	if(pt_new(&vmp->vm_pt) != OK)   // Allocate page dir for the new proc
 		panic("VM: no new pagetable");
 
 	if(pt_bind(&vmp->vm_pt, vmp) != OK)
@@ -499,7 +499,7 @@ void init_vm(void)
 		ip < &kernel_boot_info.boot_procs[NR_BOOT_PROCS]; ip++) {
 		struct vmproc *vmp;
 
-		if(ip->proc_nr < 0) continue;
+		if(ip->proc_nr < 0) continue;   // Kernel tasks donot have page table
 
 		assert(ip->start_addr);
 
@@ -509,9 +509,9 @@ void init_vm(void)
 		 */
 		if(ip->proc_nr == VM_PROC_NR) continue;
 
-		vmp = init_proc(ip->proc_nr);
+		vmp = init_proc(ip->proc_nr);   // Allocate a vmproc and init it
 
-		exec_bootproc(vmp, ip);
+		exec_bootproc(vmp, ip);         // Init the proc
 
 		/* Free the file blob */
 		assert(!(ip->start_addr % VM_PAGE_SIZE));
