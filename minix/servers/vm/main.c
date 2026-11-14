@@ -81,7 +81,7 @@ static int is_first_time(void)  // Check if VM is first run by checking if the f
 	struct proc rs_proc;
 	int r;
 
-	if ((r = sys_getproc(&rs_proc, RS_PROC_NR)) != OK)  // Get RS proc
+	if ((r = sys_getproc(&rs_proc, RS_PROC_NR)) != OK)  // Get RS proc. See idt_init and function kernel_call_entry_orig
 		panic("VM: couldn't get RS process data: %d", r);
 
 	return RTS_ISSET(&rs_proc, RTS_BOOTINHIBIT);
@@ -263,8 +263,8 @@ static struct vmproc *init_proc(endpoint_t ep_nr)
 {
 	struct boot_image *ip;
 
-	for (ip = &kernel_boot_info.boot_procs[0];
-		ip < &kernel_boot_info.boot_procs[NR_BOOT_PROCS]; ip++) {
+	for (ip = &kernel_boot_info.boot_procs[0];  // Find proc ep_nr
+		ip < &kernel_boot_info.boot_procs[NR_BOOT_PROCS]; ip++) {   // For tasks and servers
 		struct vmproc *vmp;
 
 		if(ip->proc_nr != ep_nr) continue;
@@ -428,7 +428,7 @@ static int do_procctl_notrans(message *msg)
 void init_vm(void)
 {
 	int s, i;
-	static struct memory mem_chunks[NR_MEMS];
+	static struct memory mem_chunks[NR_MEMS];   // Pyscial mem regions
 	struct boot_image *ip;
 	extern void __minix_init(void);
 	multiboot_module_t *mod;
@@ -452,7 +452,7 @@ void init_vm(void)
 	assert(kernel_boot_info.mods_with_kernel > 0);
 
 	/* Get chunks of available memory. */
-	get_mem_chunks(mem_chunks);
+	get_mem_chunks(mem_chunks); // Fill mem_chunks which describes the physical mem regions
 
 	/* Set table to 0. This invalidates all slots (clear VMF_INUSE). */
 	memset(vmproc, 0, sizeof(vmproc));
@@ -468,11 +468,11 @@ void init_vm(void)
 	map_region_init();
 
 	/* Initialize tables to all physical memory. */
-	mem_init(mem_chunks);
+	mem_init(mem_chunks);   // Use bitmap to manage physical pages
 
 	/* Architecture-dependent initialization. */
-	init_proc(VM_PROC_NR);
-	pt_init();
+	init_proc(VM_PROC_NR);  // Init vmproc corresponding to VM server
+	pt_init();              // Init page table
 
 	/* Acquire kernel ipc vectors that weren't available
 	 * before VM had determined kernel mappings

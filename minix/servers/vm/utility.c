@@ -67,7 +67,7 @@ struct memory *mem_chunks)                      /* store mem chunks here */
         base = mem_chunks[i].base;
         size = mem_chunks[i].size;
         limit = base + size;
-        base = (phys_bytes) (CLICK_CEIL(base));
+        base = (phys_bytes) (CLICK_CEIL(base)); // Click size is page
         limit = (phys_bytes) (CLICK_FLOOR(limit));
         if (limit <= base) {
                 memp->base = memp->size = 0;
