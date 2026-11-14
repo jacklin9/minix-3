@@ -108,7 +108,7 @@ void *reservedqueue_new(int max_available, int npages, int mapped, int allocflag
 	assert(npages < 10);
 
 	for(r = 0; r < MAXRESERVEDQUEUES; r++)
-		if(!reservedqueues[r].max_available)
+		if(!reservedqueues[r].max_available)    // reservedqueues is used to store reserved memory
 			break;
 
 	if(r >= MAXRESERVEDQUEUES) {
@@ -120,7 +120,7 @@ void *reservedqueue_new(int max_available, int npages, int mapped, int allocflag
 
 	memset(rq, 0, sizeof(*rq));
 	rq->next = first_reserved_inuse;
-	first_reserved_inuse = rq;
+	first_reserved_inuse = rq;      // Insert into list of memory queue headed by first_reserved_inuse
 
 	rq->max_available = max_available;
 	rq->npages = npages;

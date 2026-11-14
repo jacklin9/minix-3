@@ -1114,7 +1114,7 @@ void pt_init(void)
 	kern_start_pde = kernel_boot_info.vir_kern_start / ARCH_BIG_PAGE_SIZE;
 
         /* Get ourselves spare pages. */
-        sparepages_mem = (vir_bytes) static_sparepages;
+        sparepages_mem = (vir_bytes) static_sparepages; // static_sparepages is statically defined pages. sparsepages are used to allocate memory before VM server has its own page tables
 	assert(!(sparepages_mem % VM_PAGE_SIZE));
 
 #if defined(__arm__)
